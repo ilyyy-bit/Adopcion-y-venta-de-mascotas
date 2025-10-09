@@ -1,5 +1,6 @@
 # Adopcion-y-venta-de-mascotas
 PROYECTO: ADOPCIÓN Y VENTA DE MASCOTAS
+
 Se busca construir un sitio web o app que permita gestionar la adopción y venta de animales en un centro de estadía de mascotas.
 El sistema manejará:
 * Registro de animales disponibles (con datos básicos).
