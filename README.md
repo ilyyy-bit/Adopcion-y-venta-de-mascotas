@@ -8,4 +8,5 @@ El sistema manejará:
 * Secciones especiales de venta y adopción de perritos.
 * Promociones y descuentos (banners y ruleta).
 * Alianzas con criaderos y albergues (con comisión por cada venta generada).
+
 El objetivo es organizar/gestionar la información de animales, adoptantes y transacciones, al tiempo que se agregan funciones de marketing y convenios externos.
