@@ -14,7 +14,8 @@ class Mascota:
         self.disponible = False
 
     def mostrar_datos(self):
-        return f"{self.nombre} ({self.especie}, {self.raza}) - {self.estado_salud}"
+        estado = "Disponible" if self.disponible else "No disponible"
+        return f"{self.nombre} ({self.especie}, {self.raza}) - {self.estado_salud} | {estado}"
 
 
 class Persona:
@@ -22,15 +23,19 @@ class Persona:
         self.id_persona = id_persona
         self.nombre = nombre
         self.contacto = contacto
+        self.historial = []
+
+    def agregar_registro(self, registro):
+        self.historial.append(registro)
 
     def mostrar_info(self):
-        return f"{self.nombre} - {self.contacto}"
+        return f"{self.nombre} ({self.contacto})"
 
 
 class Registro:
     def __init__(self, id_registro, tipo, mascota, persona, monto=0):
         self.id_registro = id_registro
-        self.tipo = tipo  # adopción o venta
+        self.tipo = tipo
         self.mascota = mascota
         self.persona = persona
         self.monto = monto
@@ -58,7 +63,7 @@ class BannerPromocion:
 
     def mostrar_banner(self):
         estado = "Activo" if self.activo else "Inactivo"
-        return f"{self.texto} ({estado})"
+        return f"{self.texto} ({estado}) [{self.fecha_inicio} - {self.fecha_fin}]"
 
 
 class RuletaDescuento:
@@ -75,18 +80,49 @@ class PlataformaMascotas:
         self.mascotas = []
         self.personas = []
         self.registros = []
+        self.alianzas = []
+        self.promociones = []
+        self.ruleta = RuletaDescuento()
 
     def registrar_mascota(self, mascota):
         self.mascotas.append(mascota)
+        print(f"Mascota '{mascota.nombre}' registrada correctamente.")
 
     def registrar_persona(self, persona):
+        for p in self.personas:
+            if p.id_persona == persona.id_persona:
+                print("La persona ya está registrada.")
+                return
         self.personas.append(persona)
+        print(f"Persona '{persona.nombre}' registrada correctamente.")
 
     def crear_registro(self, tipo, mascota, persona, monto=0):
+        if not mascota.disponible:
+            print("El animal ya no está disponible.")
+            return None
         registro = Registro(len(self.registros) + 1, tipo, mascota, persona, monto)
         self.registros.append(registro)
+        persona.agregar_registro(registro)
         mascota.marcar_no_disponible()
+        print(f"{tipo.capitalize()} registrada correctamente: {mascota.nombre} -> {persona.nombre}")
         return registro
 
     def mostrar_animales_disponibles(self):
-        return [m.mostrar_datos() for m in self.mascotas if m.disponible]
+        disponibles = [m.mostrar_datos() for m in self.mascotas if m.disponible]
+        if not disponibles:
+            return ["No hay animales disponibles."]
+        return disponibles
+
+    def agregar_promocion(self, banner):
+        self.promociones.append(banner)
+        print(f"Promoción agregada: {banner.texto}")
+
+    def agregar_alianza(self, alianza):
+        self.alianzas.append(alianza)
+        print(f"Alianza registrada: {alianza.nombre}")
+
+    def girar_ruleta(self):
+        resultado = self.ruleta.girar()
+        print(resultado)
+        return resultado
+
