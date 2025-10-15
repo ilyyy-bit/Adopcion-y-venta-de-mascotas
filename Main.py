@@ -1,6 +1,5 @@
 from Modelo import *
 
-# Crear instancia principal de la plataforma
 plataforma = PlataformaMascotas()
 
 def menu():
@@ -109,5 +108,4 @@ def girar_ruleta():
     print(resultado)
 
 
-# Ejecutar el menú principal
 menu()
