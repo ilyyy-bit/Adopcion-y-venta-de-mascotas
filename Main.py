@@ -1,39 +1,9 @@
-from Modelo import *
+from Modelo import Mascota, Persona, Alianza, BannerPromocion, PlataformaMascotas
 
-# Crear instancia principal de la plataforma
 plataforma = PlataformaMascotas()
 
-def menu():
-    while True:
-        print("\n🐾=== PLATAFORMA DE ADOPCIÓN Y VENTA DE MASCOTAS ===🐾")
-        print("1. Registrar mascota")
-        print("2. Registrar persona")
-        print("3. Crear registro (adopción o venta)")
-        print("4. Mostrar animales disponibles")
-        print("5. Girar ruleta de descuento")
-        print("6. Salir")
-
-        opcion = input("\n👉 Elige una opción: ")
-
-        if opcion == "1":
-            registrar_mascota()
-        elif opcion == "2":
-            registrar_persona()
-        elif opcion == "3":
-            crear_registro()
-        elif opcion == "4":
-            mostrar_animales()
-        elif opcion == "5":
-            girar_ruleta()
-        elif opcion == "6":
-            print("\n ¡Gracias por usar la plataforma!")
-            break
-        else:
-            print(" Opción no válida, intenta nuevamente.")
-
-
 def registrar_mascota():
-    print("\n--- Registrar Mascota ---")
+    print("\n🐾 REGISTRO DE MASCOTA")
     id_animal = len(plataforma.mascotas) + 1
     nombre = input("Nombre: ")
     especie = input("Especie: ")
@@ -43,71 +13,138 @@ def registrar_mascota():
 
     mascota = Mascota(id_animal, nombre, especie, edad, raza, estado_salud)
     plataforma.registrar_mascota(mascota)
-    print(f" Mascota '{nombre}' registrada con éxito.")
 
 
 def registrar_persona():
-    print("\n--- Registrar Persona ---")
+    print("\n👤 REGISTRO DE PERSONA")
     id_persona = len(plataforma.personas) + 1
-    nombre = input("Nombre: ")
-    contacto = input("Contacto: ")
+    nombre = input("Nombre completo: ")
+    contacto = input("Correo o teléfono: ")
 
     persona = Persona(id_persona, nombre, contacto)
     plataforma.registrar_persona(persona)
-    print(f" Persona '{nombre}' registrada con éxito.")
-
-
-def crear_registro():
-    if not plataforma.mascotas or not plataforma.personas:
-        print(" Debes tener al menos una mascota y una persona registradas.")
-        return
-
-    print("\n--- Crear Registro ---")
-    print("Mascotas disponibles:")
-    disponibles = plataforma.mostrar_animales_disponibles()
-
-    for i, m in enumerate(disponibles, 1):
-        print(f"{i}. {m}")
-
-    if not disponibles:
-        print("No hay animales disponibles.")
-        return
-
-    id_mascota = int(input("Selecciona una mascota (número): ")) - 1
-    mascota = [m for m in plataforma.mascotas if m.disponible][id_mascota]
-
-    print("\nPersonas registradas:")
-    for i, p in enumerate(plataforma.personas, 1):
-        print(f"{i}. {p.mostrar_info()}")
-
-    id_persona = int(input("Selecciona una persona (número): ")) - 1
-    persona = plataforma.personas[id_persona]
-
-    tipo = input("Tipo de registro (Adopción/Venta): ").capitalize()
-    monto = 0
-    if tipo == "Venta":
-        monto = float(input("Monto de la venta: "))
-
-    registro = plataforma.crear_registro(tipo, mascota, persona, monto)
-    print(f" Registro creado: {registro.mostrar_registro()}")
 
 
 def mostrar_animales():
-    print("\n--- Animales Disponibles ---")
+    print("\n🐶 ANIMALES DISPONIBLES:")
     disponibles = plataforma.mostrar_animales_disponibles()
-    if not disponibles:
-        print("No hay animales disponibles actualmente.")
-    else:
-        for m in disponibles:
-            print("•", m)
+    for m in disponibles:
+        print("-", m)
+
+
+def crear_registro():
+    print("\n📋 CREAR REGISTRO DE ADOPCIÓN/VENTA")
+
+    if not plataforma.mascotas or not plataforma.personas:
+        print("Primero debes registrar mascotas y personas.")
+        return
+
+    mostrar_animales()
+    id_mascota = int(input("ID del animal (según el orden mostrado): ")) - 1
+    tipo = input("Tipo de registro (adopción / venta): ").lower()
+
+    print("\n personas registradas:")
+    for p in plataforma.personas:
+        print(f"{p.id_persona}. {p.nombre}")
+
+    id_persona = int(input("ID de la persona: ")) - 1
+
+    monto = 0
+    if tipo == "venta":
+        monto = float(input("Monto de la venta: "))
+
+    try:
+        mascota = plataforma.mascotas[id_mascota]
+        persona = plataforma.personas[id_persona]
+        plataforma.crear_registro(tipo, mascota, persona, monto)
+    except IndexError:
+        print("❌ ID inválido.")
+
+
+def agregar_promocion():
+    print("\n NUEVA PROMOCIÓN")
+    texto = input("Texto del banner: ")
+    inicio = input("Fecha inicio (AAAA-MM-DD): ")
+    fin = input("Fecha fin (AAAA-MM-DD): ")
+
+    banner = BannerPromocion(texto, inicio, fin)
+    plataforma.agregar_promocion(banner)
+
+
+def agregar_alianza():
+    print("\n NUEVA ALIANZA")
+    nombre = input("Nombre del aliado: ")
+    tipo = input("Tipo (Albergue / Criadero): ")
+    comision = float(input("Porcentaje de comisión: "))
+
+    alianza = Alianza(nombre, tipo, comision)
+    plataforma.agregar_alianza(alianza)
 
 
 def girar_ruleta():
-    print("\n🎡 --- Ruleta de Descuentos --- 🎡")
-    ruleta = RuletaDescuento()
-    resultado = ruleta.girar()
-    print(resultado)
+    print("\n🎡 RULETA DE DESCUENTOS")
+    plataforma.girar_ruleta()
 
 
-# Ejecutar el menú principal
-menu()
+def mostrar_historial():
+    print("\n HISTORIAL DE UNA PERSONA")
+    if not plataforma.personas:
+        print(" No hay personas registradas.")
+        return
+
+    for p in plataforma.personas:
+        print(f"{p.id_persona}. {p.nombre}")
+
+    id_persona = int(input("ID de la persona: ")) - 1
+    try:
+        persona = plataforma.personas[id_persona]
+        if not persona.historial:
+            print("No tiene registros todavía.")
+        else:
+            for r in persona.historial:
+                print("-", r.mostrar_registro())
+    except IndexError:
+        print("❌ ID inválido.")
+
+
+def menu():
+    while True:
+        print("\n========= MENÚ PRINCIPAL =========")
+        print("1. Registrar mascota")
+        print("2. Registrar persona")
+        print("3. Mostrar animales disponibles")
+        print("4. Crear adopción o venta")
+        print("5. Mostrar historial de persona")
+        print("6. Agregar promoción")
+        print("7. Agregar alianza")
+        print("8. Girar ruleta de descuentos")
+        print("9. Salir")
+        print("==================================")
+
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            registrar_mascota()
+        elif opcion == "2":
+            registrar_persona()
+        elif opcion == "3":
+            mostrar_animales()
+        elif opcion == "4":
+            crear_registro()
+        elif opcion == "5":
+            mostrar_historial()
+        elif opcion == "6":
+            agregar_promocion()
+        elif opcion == "7":
+            agregar_alianza()
+        elif opcion == "8":
+            girar_ruleta()
+        elif opcion == "9":
+            print(" ¡Gracias por usar la plataforma de adopción y venta de mascotas!")
+            break
+        else:
+            print(" Opción no válida, intenta de nuevo.")
+
+
+if __name__ == "__main__":
+    menu()
